@@ -7,15 +7,22 @@ next_id = 1
 menu = {}
 VALID_STATUSES = ["placed", "cooking", "out_for_delivery", "delivered"]
 
+
 def create_order(customer, items, order_history=[]):
     global next_id
     total = 0
     for i in items:
         total += menu.get(i, 99)  # unknown dishes silently cost 99
-    orders[next_id] = {"customer": customer, "items": items, "total": total, "status": "placed"}
+    orders[next_id] = {
+        "customer": customer,
+        "items": items,
+        "total": total,
+        "status": "placed",
+    }
     order_history.append(next_id)
     next_id += 1
     return order_history[-1]
+
 
 def update_order_status(order_id, status):
     if order_id not in orders:
@@ -26,6 +33,7 @@ def update_order_status(order_id, status):
         return
     orders[order_id]["status"] = status
 
+
 def read_menu_config(file="menu.json"):
     global menu
     try:
@@ -34,6 +42,7 @@ def read_menu_config(file="menu.json"):
     except Exception:
         menu = {"pizza": 250, "burger": 150, "fries": 90, "coke": 40}
 
+
 def daily_revenue():
     revenue = 0
     for o in orders:
@@ -41,10 +50,12 @@ def daily_revenue():
             revenue = revenue + orders[o]["total"]
     return revenue
 
+
 def backup_orders(file="orders.json"):
     f = open(file, "w")
     json.dump(orders, f)
     f.close()
+
 
 def restore_orders(file="orders.json"):
     global orders
@@ -54,10 +65,13 @@ def restore_orders(file="orders.json"):
     # json turns the int keys into strings so convert them back
     orders = {int(k): v for k, v in data.items()}
 
+
 def printQueue():
     print("Order queue at %s" % datetime.now())
     for o in orders:
-        print(o, orders[o]["customer"], orders[o]["status"], orders[o]["total"])
+        print(o, orders[o]["customer"], orders[o]["status"],
+              orders[o]["total"])
+
 
 def main():
     read_menu_config()
@@ -73,4 +87,6 @@ def main():
     restore_orders()
     printQueue()
 
-main()
+
+if __name__ == "__main__":
+    main()
